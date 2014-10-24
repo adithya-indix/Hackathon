@@ -9,5 +9,6 @@ libraryDependencies ++= Seq(
 			"org.scala-lang" % "scala-library" % "2.10.4",
 			"org.scala-lang" % "scala-compiler" % "2.10.4",
 			"org.jsoup" % "jsoup" % "1.7.3",
-			"edu.uci.ics" % "crawler4j" % "3.5"
+			"edu.uci.ics" % "crawler4j" % "3.5",
+			"com.google.code.maven-play-plugin.org.playframework" % "play" % "1.2.7"
 )
