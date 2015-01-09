@@ -1,6 +1,6 @@
 package Sears.XML
 
-import java.io.FileWriter
+import java.io.{Serializable, InputStream, FileWriter}
 
 import org.jsoup.Jsoup
 
@@ -17,8 +17,9 @@ object Categories {
 
   def partNumberFromProductSearchURL(url: String): List[String] = {
     val xml = XML.loadString(fetch(url))
+    println("URL Fetched: "+url)
     val partNumbers = (xml \\ "PartNumber").map(_.text).toList
-    println("URL Fetched: "+url + ". Produced "+partNumbers.length+" part numbers")
+    println("Produced "+partNumbers.length+" part numbers")
     partNumbers
   }
   def seedUrls = List(
@@ -58,16 +59,27 @@ object Categories {
   }
 
   def main(args: Array[String]): Unit = {
+
+    //println(upcFromPartNumber("09505815000"))
     formTSV()
     //println(getProductDetails("http://api.developer.sears.com/v2.1/products/details/Sears/xml/04440250000P?apikey=iHiCh0VVyIChkSd2dcYNwZWZGWaLiGiL&showSpec=true"))
   }
 
   def writeToFile(in: String) = {
-    val fw = new FileWriter("/home/indix/IdeaProjects/FeedsAPI/src/main/resources/sears_watches241014.csv", true)
+    val fw = new FileWriter("/home/indix/IdeaProjects/FeedsAPI/src/main/resources/sears_watches241106.csv", true)
     fw.write(in)
     fw.close()
   }
 
+  def upcFromPartNumber(partNumber: String) = {
+    val upcForPNo = Source.fromInputStream(getClass.getResourceAsStream("/upcs.txt")).getLines().toList
+    val upcmap = upcForPNo.map(x => x.split('\t')(0).trim -> x.split('\t')(1).trim)
+    val upc = upcmap.find(_._1==partNumber).getOrElse("", "NO_UPC")._2
+    println("UPC for part number - " + partNumber + " - "+upc)
+    upc
+    //println(upcForPNo)
+    //""
+  }
   def xmlToObject(in: String): ProductRecord = {
     val elem = XML.loadString(in)
     val partNumber = (elem \\ "ProductDetail" \ "SoftHardProductDetails" \ "Id" \ "PartNumber").text
@@ -86,7 +98,7 @@ object Categories {
       case Some(c) => c
       case None => ""
     }
-    ProductRecord(format(name), format(partNumber), format(mfgPartNumber), format(brandName), format(shortDescription), format(longDescription), format(mainImageUrl), addnImageURLs.map(format), format(minSalePrice), format(minListPrice), format(inStock), format(color))
+    ProductRecord(format(name), format(partNumber), format(mfgPartNumber), upcFromPartNumber(partNumber.replace("P","")), format(brandName), format(shortDescription), format(longDescription), format(mainImageUrl), addnImageURLs.map(format), format(minSalePrice), format(minListPrice), format(inStock), format(color))
   }
 
   def format(str: String) = {
@@ -97,12 +109,14 @@ object Categories {
   def getProductDetails(url: String): String = {
     val xml = fetch(url)
     println("URL Fetched: "+url)
-    xmlToObject(xml).asTSV
+    val parsedData = xmlToObject(xml)
+    println("URL Parsed: "+url)
+    parsedData.asTSV
   }
 
   def htmlText(str: String) = Jsoup.parse(str).text()
 
-  case class ProductRecord(name: String, partNumber: String, mfgPartNumber: String, brandName: String, shortDescription: String, longDescription: String, mainImageUrl: String, addnImageURLs: List[String], minSalePrice: String, listPrice:String, availability: String, color: String) {
-    def asTSV = name+"\t"+partNumber+"\t"+mfgPartNumber+"\t"+brandName+"\t"+shortDescription+"\t"+longDescription+"\t"+mainImageUrl+"\t"+addnImageURLs.mkString(",")+"\t"+minSalePrice+"\t"+listPrice+"\t"+availability+"\t"+color+"\n"
+  case class ProductRecord(name: String, partNumber: String, mfgPartNumber: String, upc: String, brandName: String, shortDescription: String, longDescription: String, mainImageUrl: String, addnImageURLs: List[String], minSalePrice: String, listPrice:String, availability: String, color: String) {
+    def asTSV = name+"\t"+partNumber+"\t"+mfgPartNumber+"\t"+upc+"\t"+brandName+"\t"+shortDescription+"\t"+longDescription+"\t"+mainImageUrl+"\t"+addnImageURLs.mkString(",")+"\t"+minSalePrice+"\t"+listPrice+"\t"+availability+"\t"+color+"\n"
   }
 }

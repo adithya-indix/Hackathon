@@ -1,0 +1,7 @@
+seed-urls,head-list-css-selector,subcategory-css-selector,listingpage-css-selector,product-count-css-selector,product-count-regex,items-per-page,total-pages
+http://www.homedepot.com,#main-nav-dropdown li.item a,.activeLevel dd li a,.productlist,#all_products,([0-9]+),dummy,dummy
+http://www.atgstores.com,li.dbrown > a,#divCatWrapper .leftBorder a/.mdL1Categories .mdL1CatText strong a,dummy,#divMsgPage,([0-9]+),dummy,dummy
+http://www.ulta.com,.nav.nav-list.font-wght > li:not(li.title-line) > a,li.cat-sub-nav a,dummy,.search-res-number,([0-9]+),dummy,dummy
+http://www.build.com,#navigation > ul#nav > li.top > a,ul.subcategories.vnav a,dummy,.search_results_count,([0-9]+),dummy,dummy
+http://www.asicsamerica.com,#ShopBarComponent.panel.secondary.wrap .listing .level_3 a,dummy,dummy,.listing_count,([0-9]+),dummy,dummy
+http://www.beauty.com,.tier2item a,dummy,dummy,dummy,([0-9]+),.ItemsPerPageLinksOn,.paginationDiv div .PaginationInactiveLink

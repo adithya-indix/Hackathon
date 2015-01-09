@@ -1,4 +1,4 @@
-name := "FeedsAPI"
+name := "Hackathon"
 
 version := "1.0"
 
